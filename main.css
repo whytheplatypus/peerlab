@@ -1,0 +1,30 @@
+#settings form{
+    padding: 10px;
+}
+
+.modal.fade{
+    top: -50%;
+}
+
+.toggle-info{
+    cursor:pointer;
+}
+
+a.muted{
+    text-decoration: none;
+}
+
+#peers{
+    padding: 10px;
+    margin:0 0 10px 0;
+}
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}

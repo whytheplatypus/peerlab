@@ -3,12 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <title>peerjs test</title>
-    <script src="components/peerjs/dist/peer.js"></script>
-    <script src="test.js"></script>
+    <link rel="stylesheet" href="components/bootstrap.css/css/bootstrap.css">
+    <link rel="stylesheet" href="components/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" href="components/sidr/dist/stylesheets/jquery.sidr.light.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="peerjs/dist/peer.js"></script>
+    <!-- make amd<script src="peerjs/extensions/pex.js"></script>
+    <script src="meshjs/mesh.js"></script>-->
+    
+    <script src="components/jquery/jquery.js"></script>
+    <script src="components/bootstrap.css/js/bootstrap.js"></script>
+    <script src="components/sidr/dist/jquery.sidr.js"></script>
+    <script>
+        function formToJSON(f){
+            var o = {}
+            for(var i = 0; i < f.elements.length; i++){
+                var element = f.elements[i];
+                //console.log(element);
+                if(element.name && element.value.length > 0){
+                    o[element.name] = element.value;
+                }
+            }
+            return o;
+        }
+    </script>
+    <script>
+        var require = {
+            urlArgs: "bust=" +  (new Date()).getTime(),
+            waitSeconds: 15,
+            paths: {
+                "jquery": "components/jquery/jquery",
+                "underscore": "components/underscore/underscore",
+                "Backbone": "components/backbone-amd/backbone",
+                "bootstrap": "components/bootstrap.css/js/bootstrap",
+                "d3" : "components/d3/d3"
+            },
+            shim: {
+                "bootstrap":{
+                    deps: ['jquery']
+                },
+                "underscore":{
+                    exports: '_'
+                },
+                "d3":{
+                    exports: "d3"
+                }
+            }
+        };
+    </script>
 </head>
 <body>
-
-
-
+    <div class="navbar">
+      <div class="navbar-inner">
+        <a class="brand" href="#">Peer Lab</a>
+        <a id="peers-link" class="navbar-text" href="#peers">Peers</a> 
+        <a href="" class="settings navbar-text muted pull-right" data-toggle="modal" data-target="#settings">
+            <i class="icon-plus icon-large"></i>
+          </a>
+      </div>
+    </div>
+    
+    <ul id="peers">
+    </ul>
+    <div id="logs"></div>
+    <div id="settings" data-backdrop="static" class="modal fade ">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <form>
+            <label>PeerJS key</label>
+            <input type="text" value="" name="key" id="peerjs_key"/>
+            
+              <div id="server_info" >
+                <p class="muted">Server defaults to peerjs if left empty.</p>
+                <label>Server URL:</label>
+                <input type="text" name="host" id="server_url" value="" placeholder="localhost"/>
+                <label>Server Port:</label>
+                <input type="number" class="input-small" name="port" id="server_port" value="" placeholder="8000"/>
+              </div>
+              <div id="peer_options" >
+                <p class="muted">Peer options.</p>
+                <label>debug</label>
+                <input type="text" name="debug" value="" placeholder="false"/>
+                <label>ICE:</label>
+                <input name="config" value="" placeholder="{ 'iceServers': [{ 'url': 'stun:stun.l.google.com:19302' }] }"/>
+              </div>
+            <div class="modal-footer">
+                <span class="pull-left" id="set_id">Set id: <input type="text" name="id" id="local_id_string" placeholder="This is optional"/></span>
+                <button id="create_peer" type="button" class="btn btn-primary">Start</button>
+            </div>
+        </form>
+    </div>
+    <script data-main="index.js" src="components/requirejs/require.js"></script>
+    
+    
+    <template id="peer-template">
+        <strong class="peer-id"></strong>
+        
+        <span  class="toggle-info muted pull-right" data-toggle="collapse" data-target="">
+            <i class="icon-info-sign"></i>
+        </span>
+     
+        <div class="collapse">
+            <p>Connections:</p>
+            <ul class="connections">
+            </ul>
+            <form>
+                <input name="id" type="text"/><button class="connect btn" type="button">Connect</button>
+            </form>
+        </div>
+    </template>
+    <script>
+        $('#peers-link').sidr({
+            name: 'peers',
+            source: '#peers'
+        });
+    </script>
 </body>
 </html>
