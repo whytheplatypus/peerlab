@@ -2,5 +2,13 @@
   "name": "peertest",
   "version": "0.0.0",
   "dependencies": {
+    "backbone-amd": "~1.0.0",
+    "underscore": "~1.4.4",
+    "bootstrap.css": "~2.1.1",
+    "jquery": "~1.9.1",
+    "font-awesome": "~3.0.2",
+    "sidr": "git://github.com/artberri/sidr.git#~1.1.1",
+    "requirejs": "~2.1.5",
+    "d3": "~3.1.5"
   }
 }

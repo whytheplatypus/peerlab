@@ -39,6 +39,7 @@ define(['Backbone', './connection'], function(Backbone, ConnectionView){
                 var sendBroadcast = document.createElement("button");
                 sendBroadcast.type = "button";
                 sendBroadcast.className="btn";
+                sendBroadcast.innerHTML="Broadcast";
                 var broadcast = document.createElement("textarea");
                 sendBroadcast.addEventListener('click', function(){
                     var msg = broadcast.value;

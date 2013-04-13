@@ -43,12 +43,12 @@ define(['d3', 'Backbone'], function(d3, Backbone){
                 for(var i = 0; i < self.force.nodes().length; i++){
                     var same = _.findWhere(graph.nodes, {id: self.force.nodes()[i].id});
                     graph.nodes = _.without(graph.nodes, same);
-                    console.log(same);
+                    //console.log(same);
                 }
                 for(var i = 0; i < self.force.links().length; i++){
-                    var same = _.where(graph.links, {source: self.force.links()[i].source, source: self.force.links()[i].target});
+                    var same = _.where(graph.links, {source: self.force.links()[i].source, target: self.force.links()[i].target});
                     graph.links = _.without(graph.links, same);
-                    console.log(same);
+                    //console.log(same);
                 }
                 for(var i = 0; i < graph.links.length; i++){
                     self.force.links().push(graph.links[i]);
@@ -75,7 +75,7 @@ define(['d3', 'Backbone'], function(d3, Backbone){
               .enter().append("circle")
               .attr("class", "node")
               .attr("r", 10)
-              .style("fill", function(d) { console.log(self.color(d.group));return self.color(d.group); })
+              .style("fill", function(d) { return self.color(d.group); })
               .on('mousedown', function(d){
                   self.startNode = d;
                   console.log("mousedown on", d)

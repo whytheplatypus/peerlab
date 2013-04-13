@@ -47,6 +47,7 @@ define(['Backbone', '../views/backgroundLog', 'mesh'], function(Backbone, backgr
             });
             
             if(this.get('mesh')){
+                console.log("mesh");
                 mesh(self.peer);
             }
             
