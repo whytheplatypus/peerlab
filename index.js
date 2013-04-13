@@ -2,7 +2,7 @@
 var peers = 'hello world';
 var jquery = $;
 
-require(['views/peers', 'collections/peers'], function(PeersView, PeerCollection) {
+require(['views/peers', 'collections/peers', 'models/peer'], function(PeersView, PeerCollection, PeerModel) {
     var self = this;
     peers = new PeerCollection();
     var peersView = new PeersView({model: peers});
@@ -10,7 +10,16 @@ require(['views/peers', 'collections/peers'], function(PeersView, PeerCollection
     addPeer.addEventListener('click', function(){
         var options = formToJSON(this.form);
         console.log("adding peer with options: ", options);
-        peers.add(options);
+        _.defaults(options, {host : "localhost", port : "8000"});
+        var peer
+        if(options.id === undefined) {
+            peer = new Peer(options);
+        } else {
+            peer = new Peer(options.id, options);
+        }
+        options.peer = peer;
+        //doing this so peermodel can and other scan be used in future renderings
+        peers.add(new PeerModel(options));
         jquery('#settings').modal('hide');
     });
 /*

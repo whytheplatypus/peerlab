@@ -11,7 +11,7 @@ define(['Backbone', '../models/peer'], function(Backbone, Peer){
             this.each(function(node){
                 var graphNode = {
                     'id': node.get('id'),
-                    'group': 1 //1 is local
+                    'group': node.get('mesh')?0:1 //1 is local
                 };
                 searchArray.push(graphNode.id);
                 json.nodes.push(graphNode);

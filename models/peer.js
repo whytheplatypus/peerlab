@@ -10,13 +10,14 @@ define(['Backbone', '../views/backgroundLog', 'mesh'], function(Backbone, backgr
         initialize: function(){
             var self = this;
             //self.set('connections', []);
-            if(this.isValid()){
+            /*if(this.isValid()){
                 if(!this.get('id')) {
                     this.peer = new Peer(this.attributes);
                 } else {
                     this.peer = new Peer(this.get('id'), this.attributes);
                 }
-            }
+            }*/
+            this.peer = this.get('peer');
             
             this.peer.on('open', function peerOpen(id){
                 console.log(id);
