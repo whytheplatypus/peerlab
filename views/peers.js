@@ -1,5 +1,5 @@
 
-define(['Backbone', './peer', './connections'], function(Backbone, PeerView, GraphView){
+define(['Backbone', './peer', './connections', './peerLog'], function(Backbone, PeerView, GraphView, PeerLogView){
     var PeersView = Backbone.View.extend({
         el: "#peers",
         initialize: function(){
@@ -9,10 +9,18 @@ define(['Backbone', './peer', './connections'], function(Backbone, PeerView, Gra
             this.graphView = new GraphView({model: this.model});
         },
         newpeer: function(peer){
+            var self = this;
             var peerView = new PeerView({model: peer});
             this.el.appendChild(peerView.render());
-            this.graphView.render();
-            this.listenTo(peer, "connection", this.graphView.render.bind(this.graphView));
+            peer.peer.once("open", function(){
+                self.graphView.render();
+                self.listenTo(peer, "connection", self.graphView.render.bind(self.graphView));
+                
+                var peerLogView = new PeerLogView({model: peer});
+                document.getElementById("sidrlogs").appendChild(peerLogView.render());
+            });
+            
+            
         },
         render: function(){
             console.log("peers is rendering");

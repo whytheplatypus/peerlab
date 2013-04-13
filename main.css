@@ -1,3 +1,9 @@
+#background_logs{
+    z-index:-100;
+    opacity: 0.4;
+    overflow:hidden;
+    position:absolute;
+}
 #settings form{
     padding: 10px;
 }
@@ -10,6 +16,21 @@
     cursor:pointer;
 }
 
+.toggle-logs{
+    cursor:pointer;
+}
+
+.toggle-logs:hover{
+    color:blue;
+}
+.toggle-send{
+    cursor:pointer;
+}
+
+.sidr ul li span {
+    display:inline;
+}
+
 a.muted{
     text-decoration: none;
 }
@@ -17,6 +38,15 @@ a.muted{
 #peers{
     padding: 10px;
     margin:0 0 10px 0;
+}
+
+#sidrlogs{
+    padding: 10px;
+    margin:0 0 10px 0;
+}
+
+.logs li{
+    overflow:scroll
 }
 
 .node {

@@ -1,16 +1,17 @@
 
-define(['Backbone'], function(Backbone){
+define(['Backbone', '../views/backgroundLog', 'mesh'], function(Backbone, backgroundLog, mesh){
     var PeerModel = Backbone.Model.extend({
         defaults: {
             id: false,
             host: 'localhost',
-            port: 8000
+            port: 8000,
+            debug: true
         },
         initialize: function(){
             var self = this;
             //self.set('connections', []);
             if(this.isValid()){
-                if(this.get('id')) {
+                if(!this.get('id')) {
                     this.peer = new Peer(this.attributes);
                 } else {
                     this.peer = new Peer(this.get('id'), this.attributes);
@@ -24,22 +25,76 @@ define(['Backbone'], function(Backbone){
             });
             this.peer.on('connection', function peerConnection(connection, meta){
                 //self.get('connections').push(connection);
+                self.log({
+                    type:"connection",
+                    peer:connection.peer,
+                    meta:meta
+                });
+                self._setupConnectionListeners(connection);                
                 self.trigger('connection', connection);
             });
             this.peer.on('error', function peerError(error){
-                console.log(error);//or whatever
+                self.log({
+                    type:"error",
+                    error: error
+                });
             });
             this.peer.on('close', function peerClose(){
-                console.log("connection to server lost");
+                self.log({
+                    type:"close"
+                });
             });
+            
+            if(this.get('mesh')){
+                mesh(self.peer);
+            }
+            
+            this.set('log', new Array());
+        },
+        log: function(msg){
+            if(msg instanceof Object){
+                msg.stamp = (new Date()).getTime();
+            } else {
+                var log = {
+                    stamp: (new Date()).getTime(),
+                    msg: msg
+                };
+                msg = log;
+            }
+            
+            this.get('log').push(msg);
+            this.trigger('log', msg);
+            if(this.get('debug')){
+                console.log(msg);                
+            }
+            backgroundLog(this.id, JSON.stringify(msg));
         },
         connect: function(id, options){
             var self = this;
             var connection = self.peer.connect(id, options);
             //self.get('connections').push(connection);
-            self.trigger('connection', connection);
+            /*self.log({
+                type:"connection",
+                to:id,
+                meta:options
+            });*/
+            //self._setupConnectionListeners(connection);
+            //self.trigger('connection', connection);
             return connection;
         },
+        _setupConnectionListeners: function(connection){
+            var self = this;
+            connection.on("data", function(data){
+                self.log({
+                    got: data,
+                    from: connection.peer
+                });
+            });
+            connection.once("open", function(){
+                self.log("connection to " +connection.peer+" open");
+            });
+        },
+        
         kill: function(options){
             var self = this;
             self.peer.destroy();

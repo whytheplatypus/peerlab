@@ -21,7 +21,11 @@
                 var element = f.elements[i];
                 //console.log(element);
                 if(element.name && element.value.length > 0){
-                    o[element.name] = element.value;
+                    if(element.type == "checkbox"){
+                        o[element.name] = element.checked;
+                    }else{
+                        o[element.name] = element.value;
+                    }
                 }
             }
             return o;
@@ -36,9 +40,13 @@
                 "underscore": "components/underscore/underscore",
                 "Backbone": "components/backbone-amd/backbone",
                 "bootstrap": "components/bootstrap.css/js/bootstrap",
-                "d3" : "components/d3/d3"
+                "d3" : "components/d3/d3",
+                "mesh": "meshjs/mesh"
             },
             shim: {
+                "mesh":{
+                    exports:'mesh'
+                },
                 "bootstrap":{
                     deps: ['jquery']
                 },
@@ -53,19 +61,20 @@
     </script>
 </head>
 <body>
+    
     <div class="navbar">
       <div class="navbar-inner">
         <a class="brand" href="#">Peer Lab</a>
-        <a id="peers-link" class="navbar-text" href="#peers">Peers</a> 
+        <a id="peers-link" class="navbar-text" href="#peers">Peers</a>
+        <a id="logs-link" class="navbar-text" href="#logs">Logs</a>
         <a href="" class="settings navbar-text muted pull-right" data-toggle="modal" data-target="#settings">
             <i class="icon-plus icon-large"></i>
           </a>
       </div>
     </div>
-    
-    <ul id="peers">
-    </ul>
-    <div id="logs"></div>
+    <div id="background_logs"></div>
+    <ul id="peers"></ul>
+    <div id="sidrlogs"></div>
     <div id="settings" data-backdrop="static" class="modal fade ">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <form>
@@ -85,15 +94,15 @@
                 <input type="text" name="debug" value="" placeholder="false"/>
                 <label>ICE:</label>
                 <input name="config" value="" placeholder="{ 'iceServers': [{ 'url': 'stun:stun.l.google.com:19302' }] }"/>
+                <label>Debug:<input type="checkbox" checked=true name="debug"/></label>
+                <label>Mesh:<input type="checkbox" checked=true name="mesh"/></label>
               </div>
             <div class="modal-footer">
                 <span class="pull-left" id="set_id">Set id: <input type="text" name="id" id="local_id_string" placeholder="This is optional"/></span>
-                <button id="create_peer" type="button" class="btn btn-primary">Start</button>
+                <button id="create_peer" type="button" class="btn btn-primary">Create</button>
             </div>
         </form>
     </div>
-    <script data-main="index.js" src="components/requirejs/require.js"></script>
-    
     
     <template id="peer-template">
         <strong class="peer-id"></strong>
@@ -111,11 +120,48 @@
             </form>
         </div>
     </template>
+    <template id="connection-template">
+        <div>
+            <p><span class="connection-id"></span><span  class="toggle-send muted" data-toggle="collapse" data-target="">
+                <i class="icon-comment"></i>
+            </span></p>
+            
+            <div class="collapse">
+                <form>
+                    <textarea name="message"></textarea>
+                    <button type="button" class="btn">Send</button>
+                </form>
+            </div>
+        </div>
+    </template>
+    <template id="background-log-template">
+        <div>
+            <strong></strong>:<span></span>
+        </div>
+    </template>
+    <template id="peer-log-template">
+        <strong class="peer-id"></strong>
+        
+        <span  class="toggle-logs muted pull-right" data-toggle="collapse" data-target="">
+            <i class="icon-reorder"></i>
+        </span>
+     
+        <div class="collapse">
+            <p>Logs:</p>
+            <ul class="logs">
+            </ul>
+        </div>
+    </template>
     <script>
         $('#peers-link').sidr({
             name: 'peers',
             source: '#peers'
         });
+        $('#logs-link').sidr({
+            name: 'sidrlogs',
+            source: '#sidrlogs'
+        });
     </script>
+    <script data-main="index.js" src="components/requirejs/require.js"></script>
 </body>
 </html>

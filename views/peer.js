@@ -1,4 +1,4 @@
-define(['Backbone'], function(Backbone){
+define(['Backbone', './connection'], function(Backbone, ConnectionView){
     var PeerView = Backbone.View.extend({
         tagName: 'div',
         template: "#peer-template",
@@ -9,22 +9,14 @@ define(['Backbone'], function(Backbone){
         },
         connection: function(conn){
             console.log(conn);
-            var connEL = document.createElement('li');
-            connEL.innerHTML = conn.peer;
-            this.el.querySelector('.connections').appendChild(connEL);
+            var connectionView = new ConnectionView({model: conn, origin:this.model});
+            this.el.querySelector('.connections').appendChild(connectionView.render());
         },
         render: function(){
             var self = this;
             var t = document.querySelector(this.template);
             t.content.querySelector('.peer-id').innerHTML = this.model.id;
             
-            for(var k in self.model.peer.connections){
-                console.log(k);
-                //might want more functionality than this eventually
-                var conn = document.createElement('li');
-                conn.innerHTML = k;
-                t.content.querySelector('.connections').appendChild(conn);
-            }
             
             t.content.querySelector('.toggle-info').setAttribute('data-target', "#"+self.model.id);
             t.content.querySelector('.collapse').id = self.model.id;
@@ -34,7 +26,14 @@ define(['Backbone'], function(Backbone){
             
             this.el.querySelector("#connect_"+self.model.id).addEventListener('click', function(){
                 console.log(self.model.connect(this.form.id.value));
+                this.form.id.value = "";
             }, false);
+            
+            for(var k in self.model.peer.connections){
+                for(var label in self.model.peer.connections[k]){
+                    self.connection(self.model.peer.connections[k][label]);
+                }
+            }
             
             return this.el;
         }

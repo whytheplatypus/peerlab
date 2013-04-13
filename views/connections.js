@@ -11,8 +11,8 @@ define(['d3', 'Backbone'], function(d3, Backbone){
             this.color = d3.scale.category20();
             
             this.force = d3.layout.force()
-                .charge(-120)
-                .linkDistance(30)
+                .charge(-200)
+                .linkDistance(70)
                 .size([width, height]);
             
             this.el = svg;
@@ -23,37 +23,58 @@ define(['d3', 'Backbone'], function(d3, Backbone){
             var graph = this.model.graph();
             this.el.selectAll(".node").remove();
             this.el.selectAll(".link").remove();
-
+            this.el.selectAll(".label").remove();
+            var startNode = false;
             this.force
               .nodes(graph.nodes)
               .links(graph.links)
               .start();
             
-            var link = this.el.selectAll(".link")
+            var links = this.el.selectAll(".link")
               .data(graph.links)
             .enter().append("line")
               .attr("class", "link")
               .style("stroke-width", 1);
             
-            var node = this.el.selectAll(".node")
+            var nodes = this.el.selectAll(".node")
               .data(graph.nodes)
-            .enter().append("circle")
+              .enter().append("circle")
               .attr("class", "node")
-              .attr("r", 5)
+              .attr("r", 10)
               .style("fill", function(d) { return self.color(d.group); })
-              .call(this.force.drag);
+              .on('mousedown', function(d){
+                  startNode = d;
+                  console.log("mousedown on", d)
+              })
+              .on('mouseup', function(d){
+                  if(startNode){
+                      self.model.get(startNode.id).connect(d.id);
+                  }
+                  startNode = false;
+                  console.log("mouseup on", d)
+              });
+              //.call(this.force.drag);;
             
-            node.append("title")
+            var labels = this.el.selectAll(".label")
+                .data(graph.nodes)
+                .enter()
+                .append("svg:text").attr("class", "label").text(function(d) { return d.id })
+                .call(this.force.drag);
+                
+            
+            nodes.append("title")
               .text(function(d) { return d.id; });
             
             this.force.on("tick", function() {
-                link.attr("x1", function(d) { return d.source.x; })
+                links.attr("x1", function(d) { return d.source.x; })
                     .attr("y1", function(d) { return d.source.y; })
                     .attr("x2", function(d) { return d.target.x; })
                     .attr("y2", function(d) { return d.target.y; });
                 
-                node.attr("cx", function(d) { return d.x; })
+                nodes.attr("cx", function(d) { return d.x; })
                     .attr("cy", function(d) { return d.y; });
+                labels.attr("x", function(d) { return d.x+20; })
+                    .attr("y", function(d) { return d.y; });
             });
             
 
