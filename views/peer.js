@@ -35,6 +35,25 @@ define(['Backbone', './connection'], function(Backbone, ConnectionView){
                 }
             }
             
+            if(self.model.get("mesh")){
+                var sendBroadcast = document.createElement("button");
+                sendBroadcast.type = "button";
+                sendBroadcast.className="btn";
+                var broadcast = document.createElement("textarea");
+                sendBroadcast.addEventListener('click', function(){
+                    var msg = broadcast.value;
+                    try{
+                        msg = JSON.parse(msg);
+                    } catch(e){
+                        console.log(e);
+                        //send it normally
+                    }
+                    self.model.peer.broadcast(msg);
+                });
+                this.el.querySelector('.collapse').appendChild(broadcast);
+                this.el.querySelector('.collapse').appendChild(sendBroadcast);
+            }
+            
             return this.el;
         }
     });
